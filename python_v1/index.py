@@ -2,6 +2,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.edge.options import Options
 import pandas as pd
 
 # Get Browser
@@ -17,16 +18,19 @@ print('Modifiers: {}'.format(modifiers))
 # Setting up "settings" file
 settingsFile = open('python_v1\settings.txt', 'w')
 
+options = Options()
+options.add_argument('--headless')
+
 # Selenium driver configuration
 if browser == 'edge':
    settingsFile.write('browser = edge')
-   driver = webdriver.Edge() # Set for Microsoft Edge
+   driver = webdriver.Edge(options=options) # Set for Microsoft Edge
 elif browser == 'chrome':
    settingsFile.write('browser = chrome')
-   driver =  webdriver.Chrome() # Set for Google Chrome
+   driver =  webdriver.Chrome(options=options) # Set for Google Chrome
 elif browser == 'firefox':
    settingsFile.write('browser = firefox')
-   driver = webdriver.Firefox() # Set for Mozilla Firefox
+   driver = webdriver.Firefox(options=options) # Set for Mozilla Firefox
 
 settingsFile.close()
 
@@ -47,28 +51,17 @@ prices = []
 stores = []
 urls = []
 i = 0
-j = 0
-k = 9
-l = 0
+
 
 for item in productsFetch:
+   # print(item.text)
    products.insert(i, item.text)
+   prices.insert(i, pricesFetch[i].text)
+   stores.insert(i, storesFetch[i].text)
+   urls.insert(i, urlsFetch[i].get_attribute('href'))
    i += 1
 
-for price in pricesFetch:
-   prices.insert(j, price.text)
-   j += 1
-
-for store in storesFetch:
-   stores.insert(k, store.text)
-   k += 1
-
-for url in urlsFetch:
-   urls.insert(l, url.get_attribute('href'))
-   print(url.get_attribute('href'))
-   l += 1
-
-# Create CSV Sheet
+# # Create CSV Sheet
 df = pd.DataFrame({
    "Product": products,
    "Prices": prices,
